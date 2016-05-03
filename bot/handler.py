@@ -1,6 +1,6 @@
 from threading import Thread
 from sdk import *
-from .queries.processor import process_text, process_attachment
+from .queries.processor import process_text
 
 
 class Handler:
