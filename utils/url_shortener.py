@@ -9,6 +9,3 @@ def shorten(url):
         json={"longUrl": url}
     )
     return json.loads(response.text)['id']
-
-
-print(shorten("https://google.ru"))
