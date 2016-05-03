@@ -34,7 +34,8 @@ def process_text(query):
                 lib = importlib.import_module('bot.queries.providers.{}'.format(source))
                 request = re.search(regex['regex'], ex).group(regex['query'])
                 res = lib.get(request, lang)
-                if res == 'nan':
-                    return regex['error'].format(request)
+                splitted = res.split('\n')
+                if splitted[0] == 'nan':
+                    return regex['error'].format(request) + (splitted[1] if len(splitted) > 1 else '')
                 return res
     return sorries[lang]

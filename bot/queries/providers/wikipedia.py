@@ -1,5 +1,6 @@
 import wikipedia
 from utils.url_shortener import shorten
+from utils.text_formatter import restrict_len
 
 
 def get(query, lang='en'):
@@ -11,8 +12,5 @@ def get(query, lang='en'):
     content = result.content
     content = (content[:content.find('(')-1] + content[content[:100].rfind(')')+1:]).split('. ')[0]
     url = shorten(result.url)
-    if len(content) + len(url) > 320:
-        content = content[:310-len(url)-3].strip() + '...'
-    else:
-        content += '.'
+    content = restrict_len(content, url)
     return '{}\n{}'.format(content, url)

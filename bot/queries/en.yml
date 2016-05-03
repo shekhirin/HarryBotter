@@ -5,7 +5,7 @@ wikipedia:
     eval: False
 
 wolfram:
-  - regex: (wolfram|wolf|wolframalpha|wolfalpha) (.+)
+  - regex: (wolfram|wolf|wolframalpha|wolfalpha)?,? (.+)
     query: 2
     error: Wolfram doesn't know anything about "{}" :(
     eval: True
