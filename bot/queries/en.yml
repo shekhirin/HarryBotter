@@ -1,0 +1,11 @@
+wikipedia:
+  - regex: (who|what) ?(is|are)? (.+)
+    query: 3
+    error: Nothing was founded for "{}" :(
+    eval: False
+
+wolfram:
+  - regex: (wolfram|wolf|wolframalpha|wolfalpha) (.+)
+    query: 2
+    error: Wolfram doesn't know anything about "{}" :(
+    eval: True
