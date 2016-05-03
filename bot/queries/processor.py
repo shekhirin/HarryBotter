@@ -23,10 +23,11 @@ def process_text(query):
         file = yaml.load(open('bot/queries/{}.yml'.format(lang), encoding='utf-8'))
     except FileNotFoundError:
         file = yaml.load(open('{}.yml'.format(lang), encoding='utf-8'))
+    query = query.lower()
     for source, regexes in file.items():
         for regex in regexes:
             if not regex['eval']:
-                ex = ''.join([x for x in query.lower() if x not in string.punctuation])
+                ex = ''.join([x for x in query if x not in string.punctuation])
             else:
                 ex = query
             if re.match(regex['regex'], ex):

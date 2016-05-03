@@ -1,6 +1,6 @@
 from threading import Thread
 from sdk import *
-from .queries.processor import process_text
+from .queries.processor import process_text, process_attachment
 
 
 class Handler:
@@ -13,7 +13,7 @@ class Handler:
             data = process_text(data)
         elif 'attachments':
             if len(event['message']['attachments']) > 1:
-                data = 'Only 1 picture!'
+                data = 'Only 1 attachment!'
             else:
                 data = Attachment(
                     type=event['message']['attachments'][0]['type'],
