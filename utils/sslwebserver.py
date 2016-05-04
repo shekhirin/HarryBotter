@@ -2,8 +2,8 @@ from bottle import ServerAdapter
 
 
 class SSLWebServer(ServerAdapter):
-    def __init__(self, certfile='/etc/letsencrypt/live/ronbot.gq/fullchain.pem',
-                 keyfile='/etc/letsencrypt/live/ronbot.gq/privkey.pem', **options):
+    def __init__(self, certfile='/etc/letsencrypt/live/harrybotter.com/fullchain.pem',
+                 keyfile='/etc/letsencrypt/live/harrybotter.com/privkey.pem', **options):
         super().__init__(**options)
         self.certfile = certfile
         self.keyfile = keyfile
