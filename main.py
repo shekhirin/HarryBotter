@@ -5,7 +5,7 @@ import os
 
 config = Config()
 for var, value in config.items():
-    os.environ[var] = value
+    os.environ[var] = str(value)
 facebook = Facebook(os.environ['messenger_access_token'])
 handler = Handler(facebook)
 

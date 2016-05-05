@@ -1,3 +1,4 @@
 messenger_access_token: YOUR-FB-MESSENGER-ACCESS-TOKEN
 wolfram_appid: YOUR-WOLFRAMALPHA-APPID
-google_api_key: YOUR-GOOGLE-API-KEY
+adfly_public_key: YOUR-ADFLY-PUBLIC-KEY
+adfly_user_id: YOUR-ADFLY-USER-ID
