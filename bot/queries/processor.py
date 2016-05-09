@@ -13,9 +13,10 @@ sorries = {
 
 
 def process_text(query):
-    if query[0] in english:
+    ex = query.lower()
+    if ex[0] in english:
         lang = 'en'
-    elif query[0] in russian:
+    elif ex[0] in russian:
         lang = 'ru'
     else:
         lang = 'en'
@@ -26,9 +27,7 @@ def process_text(query):
     for source, regexes in file.items():
         for regex in regexes:
             if not regex['eval']:
-                ex = ''.join([x for x in query.lower() if x not in string.punctuation])
-            else:
-                ex = query.lower()
+                ex = ''.join([x for x in ex if x not in string.punctuation])
             if re.match(regex['regex'], ex):
                 lib = importlib.import_module('bot.queries.providers.{}'.format(source))
                 request = re.search(regex['regex'], ex).group(regex['query'])

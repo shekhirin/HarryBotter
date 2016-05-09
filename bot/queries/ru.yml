@@ -9,3 +9,9 @@ wolfram:
     query: 2
     error: Вольфрам ничего не знает об "{}" :(
     eval: True
+
+help:
+  - regex: ?/?(помощь|хелп)
+    query: 1
+    error:
+    eval: False
