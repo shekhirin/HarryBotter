@@ -11,7 +11,7 @@ wolfram:
     eval: True
 
 help:
-  - regex: ?/?(помощь|хелп)
+  - regex: /?(помощь|хелп)
     query: 1
     error:
     eval: False
