@@ -21,3 +21,9 @@ weather:
     query: 7
     error: I don't know anything about weather in {}
     eval: False
+
+translate:
+  - regex: (how)? ?(is |to say )?(.+) in (.+)
+    query: [3,4]
+    error: I don't know how to say {} in {}
+    eval: False

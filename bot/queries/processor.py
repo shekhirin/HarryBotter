@@ -29,14 +29,20 @@ def process_text(query):
     for source, regexes in file.items():
         for regex in regexes:
             if re.match(regex['regex'], ex):
-                logging.info('Using {} provider'.format(source))
+                logging.info('Using {} provider with regex {}'.format(source, regex))
                 if not regex['eval']:
                     ex = ''.join([x for x in ex if x not in string.punctuation])
                 lib = importlib.import_module('bot.queries.providers.{}'.format(source))
-                request = re.search(regex['regex'], ex).group(regex['query'])
+                if type(regex['query']) is list:
+                    request = [re.search(regex['regex'], ex).group(group) for group in regex['query']]
+                else:
+                    request = re.search(regex['regex'], ex).group(regex['query'])
                 res = lib.get(request, lang)
                 splitted = res.split('\n')
                 if splitted[0] == 'nan':
-                    return regex['error'].format(request) + (splitted[1] if len(splitted) > 1 else '')
+                    if type(request) is list:
+                        return regex['error'].format(*request) + (splitted[1] if len(splitted) > 1 else '')
+                    else:
+                        return regex['error'].format(request) + (splitted[1] if len(splitted) > 1 else '')
                 return res
     return sorries[lang]

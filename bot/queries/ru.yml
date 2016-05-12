@@ -20,3 +20,29 @@ weather:
     query: 2
     error: Мне неизвестно о погоде в {}
     eval: False
+
+translate:
+  - regex: (переведи|перевод|перевести) (.+) на (.+)
+    query: [2,3]
+    error: Не могу перевести {} на {}
+    eval: False
+
+  - regex: как ?(сказать)? (.+) на (.+)
+    query: [2,3]
+    error: Не могу перевести {} на {}
+    eval: False
+
+  - regex: как на (.+) (.+)
+    query: [2,1]
+    error: Не могу перевести {} на {}
+    eval: False
+
+  - regex: как (.+) по(-)?(.+)
+    query: [1,3]
+    error: Не могу перевести {} на {}
+    eval: False
+
+  - regex: как по(-)?(.+) (.+)
+    query: [3,2]
+    error: Не могу перевести {} на {}
+    eval: False
