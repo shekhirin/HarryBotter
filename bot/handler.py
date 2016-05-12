@@ -1,6 +1,7 @@
 from threading import Thread
 from sdk import *
 from .queries.processor import process_text
+import logging
 
 
 class Handler:
@@ -8,6 +9,8 @@ class Handler:
         self.facebook = facebook
 
     def process(self, event):
+        logging.info('Processing ' + str(event))
+        data = ''
         if 'text' in event['message']:
             data = event['message']['text']
             data = process_text(data)

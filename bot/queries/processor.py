@@ -2,6 +2,7 @@ import re
 import yaml
 import importlib
 import string
+import logging
 
 english = 'abcdefghijklmnopqrstuvwxyz'
 russian = 'абвгдеёжзийклмнопрстуфхцчшщъыьэюя'
@@ -24,9 +25,11 @@ def process_text(query):
         file = yaml.load(open('bot/queries/{}.yml'.format(lang), encoding='utf-8'))
     except FileNotFoundError:
         file = yaml.load(open('{}.yml'.format(lang), encoding='utf-8'))
+    logging.info('{}.yml loaded'.format(lang))
     for source, regexes in file.items():
         for regex in regexes:
             if re.match(regex['regex'], ex):
+                logging.info('Using {} provider'.format(source))
                 if not regex['eval']:
                     ex = ''.join([x for x in ex if x not in string.punctuation])
                 lib = importlib.import_module('bot.queries.providers.{}'.format(source))

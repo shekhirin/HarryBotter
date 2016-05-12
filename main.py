@@ -2,12 +2,14 @@ from bottle import post, request, run, get
 from bot import Handler
 from utils import Config, Facebook, SSLWebServer
 import os
+import logging
 
 config = Config()
 for var, value in config.items():
     os.environ[var] = str(value)
 facebook = Facebook(os.environ['messenger_access_token'])
 handler = Handler(facebook)
+logging.basicConfig(format='%(levelname)-8s [%(asctime)s] %(message)s', level=logging.DEBUG, filename='output.log')
 
 
 @post('/5bb893ef4003aa48b7d27965bcb32ab9faf03453f920fdb19c')
