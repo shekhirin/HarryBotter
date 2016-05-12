@@ -9,9 +9,14 @@ wolfram:
     query: 2
     error: Вольфрам ничего не знает об "{}" :(
     eval: True
-
 help:
   - regex: /?(помощь|хелп)
     query: 1
     error:
+    eval: False
+
+weather:
+  - regex: (какая |что за )?погода ?в? (.+)
+    query: 2
+    error: Мне неизвестно о погоде в {}
     eval: False

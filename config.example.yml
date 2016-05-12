@@ -2,3 +2,4 @@ messenger_access_token: YOUR-FB-MESSENGER-ACCESS-TOKEN
 wolfram_appid: YOUR-WOLFRAMALPHA-APPID
 adfly_public_key: YOUR-ADFLY-PUBLIC-KEY
 adfly_user_id: YOUR-ADFLY-USER-ID
+forecastio_api_key: YOUR-FORECASTIO-API-KEY

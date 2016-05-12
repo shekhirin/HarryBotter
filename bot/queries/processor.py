@@ -26,9 +26,9 @@ def process_text(query):
         file = yaml.load(open('{}.yml'.format(lang), encoding='utf-8'))
     for source, regexes in file.items():
         for regex in regexes:
-            if not regex['eval']:
-                ex = ''.join([x for x in ex if x not in string.punctuation])
             if re.match(regex['regex'], ex):
+                if not regex['eval']:
+                    ex = ''.join([x for x in ex if x not in string.punctuation])
                 lib = importlib.import_module('bot.queries.providers.{}'.format(source))
                 request = re.search(regex['regex'], ex).group(regex['query'])
                 res = lib.get(request, lang)

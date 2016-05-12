@@ -15,3 +15,9 @@ help:
     query: 1
     error:
     eval: False
+
+weather:
+  - regex: (what('s)? (is )?)?(the )?weather (is )?(in )?(.+)
+    query: 7
+    error: I don't know anything about weather in {}
+    eval: False
