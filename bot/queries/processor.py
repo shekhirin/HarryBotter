@@ -38,11 +38,10 @@ def process_text(query):
                 else:
                     request = re.search(regex['regex'], ex).group(regex['query'])
                 res = lib.get(request, lang)
-                splitted = res.split('\n')
-                if splitted[0] == 'nan':
+                if res['content'] == 'nan':
                     if type(request) is list:
-                        return regex['error'].format(*request) + (splitted[1] if len(splitted) > 1 else '')
+                        return regex['error'].format(*request) + (res['url'] if 'url' in res else '')
                     else:
-                        return regex['error'].format(request) + (splitted[1] if len(splitted) > 1 else '')
+                        return regex['error'].format(request) + (res['url'] if 'url' in res else '')
                 return res
     return sorries[lang]

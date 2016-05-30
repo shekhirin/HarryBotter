@@ -12,7 +12,7 @@ handler = Handler(facebook)
 logging.basicConfig(format='%(levelname)-8s [%(asctime)s] %(message)s', level=logging.DEBUG, filename='output.log')
 
 
-@post('/5bb893ef4003aa48b7d27965bcb32ab9faf03453f920fdb19c')
+@post('/' + os.environ['webhook_url'])
 def post():
     entries = request.json
     for entry in entries['entry']:
@@ -22,7 +22,7 @@ def post():
             handler.process(event)
 
 
-@get('/5bb893ef4003aa48b7d27965bcb32ab9faf03453f920fdb19c')
+@get('/' + os.environ['webhook_url'])
 def get():
     if request.GET['hub.verify_token'] == '18731293187':
         return request.GET['hub.challenge']

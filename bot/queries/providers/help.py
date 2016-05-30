@@ -1,9 +1,17 @@
 def get(query, lang='en'):
     if lang is 'ru':
-        return """
-            Скоро здесь будет помощь!
-        """
+        return {
+            'type': 'text',
+            'content':
+                """
+                Скоро здесь будет помощь!
+                """
+        }
     else:
-        return """
-            Help will be there soon!
-        """
+        return {
+            'type': 'text',
+            'content':
+                """
+                Help will be there soon!
+                """
+        }

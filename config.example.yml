@@ -1,3 +1,4 @@
+webhook_url: YOUR-FB-APP-WEBHOOK-URL-WITHOUT-DOMAIN
 messenger_access_token: YOUR-FB-MESSENGER-ACCESS-TOKEN
 wolfram_appid: YOUR-WOLFRAMALPHA-APPID
 adfly_public_key: YOUR-ADFLY-PUBLIC-KEY

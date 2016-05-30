@@ -7,12 +7,19 @@ def get(query, lang='en'):
     wikipedia.set_lang(lang)
     search = wikipedia.search(query)
     if not search:
-        return 'nan'
+        return {
+            'content': 'nan'
+        }
     try:
         result = wikipedia.page(search[0])
     except wikipedia.DisambiguationError:
-        return 'https://{}.wikipedia.org/wiki/{}'.format(lang, query)
-    content = result.content.split('\n')[0]
-    url = shorten(result.url)
-    content = restrict_len(content, url)
-    return '{}\n{}'.format(content, url)
+        return {
+            'type': 'text',
+            'content': 'https://{}.wikipedia.org/wiki/{}'.format(lang, query)
+        }
+    content = {
+        'type': 'text',
+        'content': result.content.split('\n')[0],
+        'url': shorten(result.url)
+    }
+    return content
