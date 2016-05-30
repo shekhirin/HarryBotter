@@ -27,6 +27,11 @@ def process_text(query):
         file = yaml.load(open('{}.yml'.format(lang), encoding='utf-8'))
     logging.info('{}.yml loaded'.format(lang))
     for source, regexes in file.items():
+        for i, regex in enumerate(regexes):
+            if 'priority' not in regex:
+                regex['priority'] = 0
+            regexes[i] = regex
+        regexes = sorted(regexes, key=lambda x: x['priority'], reverse=True)
         for regex in regexes:
             if re.match(regex['regex'], ex):
                 try:

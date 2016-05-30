@@ -21,9 +21,10 @@ weather:
     query: 7
     error: I don't know anything about weather in {}
     eval: False
+    priority: 1
 
 translate:
-  - regex: (how)? ?(is |to say )?(.+) in (.+)
-    query: [3,4]
+  - regex: (translate)? ?(how)? ?(is |to say)?(.+) (in|to|into) (.+)
+    query: [4,6]
     error: I don't know how to say {} in {}
     eval: False
