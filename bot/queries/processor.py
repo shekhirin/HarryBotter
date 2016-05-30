@@ -8,12 +8,14 @@ english = 'abcdefghijklmnopqrstuvwxyz'
 russian = 'абвгдеёжзийклмнопрстуфхцчшщъыьэюя'
 
 sorries = {
-    'en': "Sorry, I don't understand you :(",
-    'ru': "Извини, я тебя не понимаю :("
+    'en': ["Sorry, I don't understand you :(", "An error occurred, sorry"],
+    'ru': ["Извини, я тебя не понимаю :(", "Произошла ошибка, извините"]
 }
 
 
 def process_text(query):
+    if query is 'sendsorryplease':
+        return sorries['en'][0]
     ex = query.lower()
     if ex[0] in english:
         lang = 'en'
@@ -51,5 +53,5 @@ def process_text(query):
                             return regex['error'].format(request) + (res['url'] if 'url' in res else '')
                     return res
                 except Exception:
-                    return sorries[lang]
-    return sorries[lang]
+                    return sorries[lang][1]
+    return sorries[lang][0]

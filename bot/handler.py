@@ -11,18 +11,19 @@ class Handler:
 
     def process(self, event):
         logging.info('Processing ' + str(event))
-        data = ''
         if 'text' in event['message']:
             data = event['message']['text']
             data = process_text(data)
-        elif 'attachments':
-            if len(event['message']['attachments']) > 1:
-                data = 'Only 1 attachment!'
-            else:
-                data = Attachment(
-                    type=event['message']['attachments'][0]['type'],
-                    payload=ImagePayload(url=event['message']['attachments'][0]['payload']['url'])
-                )
+        else:
+            data = process_text('sendsorryplease')
+        # elif 'attachments':
+        #     if len(event['message']['attachments']) > 1:
+        #         data = 'Only 1 attachment!'
+        #     else:
+        #         data = Attachment(
+        #             type=event['message']['attachments'][0]['type'],
+        #             payload=ImagePayload(url=event['message']['attachments'][0]['payload']['url'])
+        #         )
         self.send(data, event['sender']['id'])
 
     def send(self, data, to):
@@ -39,9 +40,14 @@ class Handler:
                 args.append(Message(Recipient(to), url))
             Thread(target=self.facebook.message, args=(args,)).start()
 
-        if type(data) is str or type(data) is Attachment:
+        if type(data) is str:
             Thread(target=self.facebook.message,
-                   args=(Message(Recipient(to), restrict_len(data[:data.rfind('\n')])),)).start()
+                   args=(
+                       Message(Recipient(to), restrict_len((data[:data.rfind('\n')] if '\n' in data else data))),)
+                   ).start()
+        elif type(data) is Attachment:
+            Thread(target=self.facebook.message,
+                   args=(Message(Recipient(to), data))).start()
         elif type(data) is list:
             map(start_thread, data)
         elif type(data) is dict:
