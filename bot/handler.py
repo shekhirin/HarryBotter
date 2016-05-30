@@ -37,7 +37,6 @@ class Handler:
             if 'url' in inp:
                 url = restrict_len(inp['url'])
                 args.append(Message(Recipient(to), url))
-            print(args)
             Thread(target=self.facebook.message, args=(args,)).start()
 
         if type(data) is str or type(data) is Attachment:

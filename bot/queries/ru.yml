@@ -32,11 +32,6 @@ translate:
     error: Не могу перевести {} на {}
     eval: False
 
-  - regex: как на (.+) (.+)
-    query: [2,1]
-    error: Не могу перевести {} на {}
-    eval: False
-
   - regex: как (.+) по(-)?(.+)
     query: [1,3]
     error: Не могу перевести {} на {}
