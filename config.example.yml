@@ -5,3 +5,5 @@ adfly_public_key: YOUR-ADFLY-PUBLIC-KEY
 adfly_user_id: YOUR-ADFLY-USER-ID
 forecastio_api_key: YOUR-FORECASTIO-API-KEY
 yandex_translate_key: YOUR-YANDEX-TRANSLATE-KEY
+fullchain: PATH-TO-CERTFILE
+privkey: PATH-TO-KEYFILE

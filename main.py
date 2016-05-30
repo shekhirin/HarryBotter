@@ -28,7 +28,5 @@ def get():
         return request.GET['hub.challenge']
     else:
         return 'Error, invalid token'
-
-
-srv = SSLWebServer(host='0.0.0.0', port=8000)
+srv = SSLWebServer(fullchain=os.environ['fullchain'], privkey=os.environ['privkey'], host='0.0.0.0', port=8000)
 run(server=srv, reloader=True)
