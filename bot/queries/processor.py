@@ -47,7 +47,6 @@ def process_text(query, config, params={}):
                         else:
                             return regex['error'].format(request) + (res['url'] if 'url' in res else '')
                     return res
-                except Exception as err:
-                    print(err)
+                except Exception:
                     return sorries[lang][1]
     return sorries[lang][0]

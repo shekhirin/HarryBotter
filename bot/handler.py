@@ -24,7 +24,7 @@ class Handler:
             except BaseException:
                 return
         else:
-            logging.getLogger('app').log(logging.INFO, 'Set language = {} to user {}'.format(lang, user_id))
+            logging.getLogger('app').log(logging.INFO, 'SET language {} to user {}'.format(lang, user_id))
             self.mongo.user_made_first_contact(user_id, True)
             self.mongo.set_lang(user_id, lang)
             self.send(user_id, self.get_phrase(user_id, 'lang_install_success'))
@@ -67,6 +67,8 @@ class Handler:
         if 'text' in event['message']:
             data = event['message']['text']
             data = process_text(data, self.config, {'user_id': user_id})
+            if type(data) is dict:
+                data['content'] = data['content'].split('\n\n')
         elif 'attachments' in event['message']:
             if len(event['message']['attachments']) > 1:
                 data = 'Only 1 attachment!'
@@ -76,8 +78,9 @@ class Handler:
                     if not self.mongo.is_user_location_exists(user_id) or self.mongo.is_user_ready(user_id):
                         self.mongo.insert_user_location(user_id, user_attachment['payload']['coordinates'])
                         logging.getLogger('app').log(logging.INFO,
-                            'Set location = {} to user {}'.format(self.mongo.get_user_location(user_id), user_id)
-                        )
+                                                     'SET location {} to user {}'.format(
+                                                         self.mongo.get_user_location(user_id), user_id)
+                                                     )
                         data = self.get_phrase(user_id, 'location_updated')
                     else:
                         data = Attachment(
@@ -110,7 +113,7 @@ class Handler:
             elif inp['type'] == 'text':
                 text = restrict_len(inp['content'])
                 args.append(Message(Recipient(to), text))
-            if 'url' in inp:
+            if 'url' in inp and inp['url'] is not None:
                 url = restrict_len(inp['url'])
                 args.append(Message(Recipient(to), url))
             Thread(target=self.facebook.message, args=(args,)).start()
@@ -124,6 +127,11 @@ class Handler:
             Thread(target=self.facebook.message,
                    args=(Message(Recipient(to), data),)).start()
         elif type(data) is list:
-            map(start_thread, data)
+            for item_data in data:
+                start_thread(item_data)
         elif type(data) is dict:
-            start_thread(data)
+            if type(data['content']) is list:
+                for content_data in data['content']:
+                    dic = data
+                    dic['content'] = content_data
+                    start_thread(dic)
