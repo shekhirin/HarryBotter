@@ -20,18 +20,21 @@ file_handler.setLevel(logging.DEBUG)
 file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 
+
 def log_to_logger(fn):
     @wraps(fn)
     def _log_to_logger(*args, **kwargs):
         request_time = datetime.now()
         actual_response = fn(*args, **kwargs)
-        logger.info('%s %s %s %s %s' % (request.remote_addr,
-                                        request_time,
-                                        request.method,
-                                        request.url,
-                                        response.status))
+        logger.info('%s - - %s "%s %s" %s -' % (request.remote_addr,
+                                                request_time.strftime('[%d/%b/%Y:%H:%M:%S +0300]'),
+                                                request.method,
+                                                request.url,
+                                                response.status_code))
         return actual_response
+
     return _log_to_logger
+
 
 app = Bottle()
 app.install(log_to_logger)
@@ -53,6 +56,7 @@ def get():
         return request.GET['hub.challenge']
     else:
         return 'Error, invalid token'
+
 
 srv = SSLWebServer(fullchain=config['fullchain'], privkey=config['privkey'], quiet=True, host='0.0.0.0', port=8000)
 app.run(server=srv, reloader=True)
