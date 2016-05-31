@@ -4,3 +4,4 @@ from .attachment import Attachment
 from .message import Message
 from .recipient import Recipient
 from .image import ImagePayload
+from .location import LocationPayload
