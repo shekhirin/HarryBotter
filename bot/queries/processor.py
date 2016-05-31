@@ -3,6 +3,7 @@ import yaml
 import importlib
 import string
 import logging
+from utils.url_shortener import shorten
 
 english = 'abcdefghijklmnopqrstuvwxyz'
 russian = 'абвгдеёжзийклмнопрстуфхцчшщъыьэюя'
@@ -46,6 +47,8 @@ def process_text(query, params={}):
                     else:
                         request = re.search(regex['regex'], ex).group(regex['query'])
                     res = lib.get(request, params, lang)
+                    if 'url' in res:
+                        res['url'] = shorten(res['url'])
                     if res['content'] == 'nan':
                         if type(request) is list:
                             return regex['error'].format(*request) + (res['url'] if 'url' in res else '')

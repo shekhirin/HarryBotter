@@ -7,39 +7,58 @@ from utils.mongo import Mongo
 
 
 class Handler:
-    def __init__(self, facebook):
+    def __init__(self, facebook, config):
         self.facebook = facebook
         self.mongo = Mongo('userLocations')
+        self.callback = None
+        self.config = config
+
+    def set_lang(self, event):
+        if event['message']['text'] not in self.config['languages']:
+            try:
+                self.checks()
+            except BaseException:
+                return
+        else:
+            self.mongo.user_made_first_contact(True)
+            self.mongo.set_lang(event['message']['text'])
+            self.send(self.config['languages'][self.mongo.get_user_lang()]['lang_install_success'])
+            self.callback = None
+
+    def checks(self):
+        if self.mongo.is_user_first_contact():
+            self.send_and_wait_response('What is your language? (russian/english)')
+            self.callback = self.set_lang
+            raise BaseException
 
     def process(self, event):
         logging.info('Processing ' + str(event))
-        user_id = event['sender']['id']
-        if not self.mongo.check_user_location_exists(user_id) and self.mongo.check_user_ready(
-                user_id):
-            if 'text' in event['message'] and event['message']['text'] == 'NO':
-                self.mongo.insert_user_wants(user_id, False)
-                self.send('Если вы все же решите получить доступ, отправьте свое местоположение', user_id)
+        self.mongo.user_id = event['sender']['id']
+        if self.mongo.is_awaiting():
+            if 'message' in event and self.callback is not None:
+                self.callback(event)
+                self.mongo.set_awaiting(False)
                 return
-        elif not self.mongo.check_user_location_exists(user_id) and self.mongo.check_user_wants(user_id):
-            self.mongo.insert_user_ready(user_id, True)
-            self.send(
-                'Отправьте свое местоположение или "NO", если не желаете получить доступ к погоде в своем регионе',
-                user_id)
+        try:
+            self.checks()
+        except BaseException:
+            return
+        if not self.mongo.is_user_location_exists():
+            self.mongo.insert_user_ready(True)
+            self.send_and_wait_response(
+                'Отправьте свое местоположение, если желаете получить доступ к погоде в своем регионе')
             return
         if 'text' in event['message']:
             data = event['message']['text']
-            data = process_text(data, {'user_id': user_id})
+            data = process_text(data, {'user_id': self.mongo.user_id})
         elif 'attachments' in event['message']:
             if len(event['message']['attachments']) > 1:
                 data = 'Only 1 attachment!'
             else:
                 user_attachment = event['message']['attachments'][0]
                 if user_attachment['type'] == 'location':
-                    if not self.mongo.check_user_location_exists(
-                            user_id) or self.mongo.check_user_ready(user_id):
-                        self.mongo.insert_user_location(user_id,
-                                                        user_attachment['payload']['coordinates'])
-                        self.mongo.insert_user_wants(user_id, True)
+                    if not self.mongo.is_user_location_exists() or self.mongo.is_user_ready():
+                        self.mongo.insert_user_location(user_attachment['payload']['coordinates'])
                         data = 'Ваше местоположение успешно установлено!'
                     else:
                         data = Attachment(
@@ -55,9 +74,15 @@ class Handler:
                     data = process_text('sendsorryplease')
         else:
             data = process_text('sendsorryplease')
-        self.send(data, user_id)
+        self.send(data)
 
-    def send(self, data, to):
+    def send_and_wait_response(self, data):
+        self.send(data)
+        self.mongo.set_awaiting(True)
+
+    def send(self, data):
+        to = self.mongo.user_id
+
         def start_thread(inp):
             args = []
             if inp['type'] == 'image':

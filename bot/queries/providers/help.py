@@ -1,4 +1,4 @@
-def get(query, lang='en'):
+def get(query, params={}, lang='en'):
     if lang is 'ru':
         return {
             'type': 'text',

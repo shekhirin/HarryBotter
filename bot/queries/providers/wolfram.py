@@ -1,8 +1,9 @@
 import wolframalpha
 import os
+from urllib.parse import quote_plus
 
 
-def get(query, lang='en'):
+def get(query, params={}, lang='en'):
     client = wolframalpha.Client(os.environ['wolfram_appid'])
     response = client.query(query)
     res = [pod for pod in response.pods if pod.title == 'Result' or pod.title == 'Response']
@@ -25,5 +26,5 @@ def get(query, lang='en'):
         content = {
             'content': 'nan'
         }
-    content['url'] = 'https://www.wolframalpha.com/input/?i=' + query.replace(' ', '+')
+    content['url'] = 'https://www.wolframalpha.com/input/?i=' + quote_plus(query)
     return content

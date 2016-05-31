@@ -3,12 +3,14 @@ wikipedia:
     query: 3
     error: Nothing was founded for "{}" :(
     eval: False
+    example: What is google?
 
 wolfram:
   - regex: ^(wolfram|wolf|wolframalpha|wolfalpha)?,? (.+)$
     query: 2
     error: Wolfram doesn't know anything about "{}" :(
     eval: True
+    example: Wolf, where is USA?
 
 help:
   - regex: ^/?(help)$
@@ -22,6 +24,7 @@ weather:
     error: I don't know anything about the weather in {}
     eval: False
     priority: 1
+    example: What's the weather in Dublin?
 
   - regex: ^(what('s)? (is )?)?(the )?(weather) ?(at home|today)?$
     query: 5
@@ -29,9 +32,11 @@ weather:
     eval: False
     priority: 2
     params: [user_id]
+    example: What's the weather at home?
 
 translate:
   - regex: ^(translate)? ?(how)? ?(is |to say)?(.+) (in|to|into) (.+)$
     query: [4,6]
     error: I don't know how to say {} in {}
     eval: False
+    example: Translate roar to russian

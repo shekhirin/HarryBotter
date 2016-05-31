@@ -1,18 +1,15 @@
 from bottle import post, request, run, get
 from bot import Handler
 from utils import Config, Facebook, SSLWebServer
-import os
 import logging
 
 config = Config()
-for var, value in config.items():
-    os.environ[var] = str(value)
-facebook = Facebook(os.environ['messenger_access_token'])
-handler = Handler(facebook)
+facebook = Facebook(config['messenger_access_token'])
+handler = Handler(facebook, config)
 logging.basicConfig(format='%(levelname)-8s [%(asctime)s] %(message)s', level=logging.DEBUG, filename='output.log')
 
 
-@post('/' + os.environ['webhook_url'])
+@post('/' + config['webhook_url'])
 def post():
     entries = request.json
     for entry in entries['entry']:
@@ -22,11 +19,11 @@ def post():
             handler.process(event)
 
 
-@get('/' + os.environ['webhook_url'])
+@get('/' + config['webhook_url'])
 def get():
     if request.GET['hub.verify_token'] == '18731293187':
         return request.GET['hub.challenge']
     else:
         return 'Error, invalid token'
-srv = SSLWebServer(fullchain=os.environ['fullchain'], privkey=os.environ['privkey'], host='0.0.0.0', port=8000)
+srv = SSLWebServer(fullchain=config['fullchain'], privkey=config['privkey'], host='0.0.0.0', port=8000)
 run(server=srv, reloader=True, debug=False)

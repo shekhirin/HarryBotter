@@ -3,7 +3,7 @@ from utils.url_shortener import shorten
 from utils.text_formatter import restrict_len
 
 
-def get(query, lang='en'):
+def get(query, params={}, lang='en'):
     wikipedia.set_lang(lang)
     search = wikipedia.search(query)
     if not search:
@@ -20,6 +20,6 @@ def get(query, lang='en'):
     content = {
         'type': 'text',
         'content': result.content.split('\n')[0],
-        'url': shorten(result.url)
+        'url': result.url
     }
     return content

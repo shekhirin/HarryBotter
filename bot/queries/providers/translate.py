@@ -3,7 +3,7 @@ import os
 from pycountry import languages
 
 
-def get(query, lang='en'):
+def get(query, params={}, lang='en'):
     translator = YandexTranslate(key=os.environ['yandex_translate_key'])
     to_translate = query[0]
     try:
