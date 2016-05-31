@@ -12,7 +12,7 @@ class Facebook:
             post_url = 'https://graph.facebook.com/v2.6/me/messages?access_token={}'.format(self.access_token)
             content = json.dumps(data_item)
             response = requests.post(post_url, headers={"Content-Type": "application/json"}, data=content)
-            logging.info(response.content)
+            logging.info('Facebook response: ' + response.content)
 
         if type(data) is list:
             for item in data:

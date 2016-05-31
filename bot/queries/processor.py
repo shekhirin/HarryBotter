@@ -28,7 +28,6 @@ def process_text(query, params={}):
         file = yaml.load(open('bot/queries/{}.yml'.format(lang), encoding='utf-8'))
     except FileNotFoundError:
         file = yaml.load(open('{}.yml'.format(lang), encoding='utf-8'))
-    logging.info('{}.yml loaded'.format(lang))
     for source, regexes in file.items():
         for i, regex in enumerate(regexes):
             if 'priority' not in regex:
@@ -38,7 +37,7 @@ def process_text(query, params={}):
         for regex in regexes:
             if re.match(regex['regex'], ex):
                 try:
-                    logging.info('Using {} provider with regex {}'.format(source, regex))
+                    logging.info('{} provider: {}'.format(source, regex))
                     if not regex['eval']:
                         ex = ''.join([x for x in ex if x not in string.punctuation])
                     lib = importlib.import_module('bot.queries.providers.{}'.format(source))

@@ -13,59 +13,62 @@ class Handler:
         self.callback = None
         self.config = config
 
-    def set_lang(self, event):
-        if event['message']['text'] not in self.config['languages']:
+    def set_lang(self, user_id, event):
+        if event['message']['text'].lower().strip() not in self.config['languages']:
             try:
-                self.check()
+                self.check(user_id)
             except BaseException:
                 return
         else:
-            self.mongo.user_made_first_contact(True)
-            self.mongo.set_lang(event['message']['text'])
-            self.send(self.config['languages'][self.mongo.get_user_lang()]['lang_install_success'])
+            logging.info('Set language = {} to user {}'.format(event['message']['text'], user_id))
+            self.mongo.user_made_first_contact(user_id, True)
+            self.mongo.set_lang(user_id, event['message']['text'])
+            self.send(user_id, self.config['languages'][self.mongo.get_user_lang(user_id)]['lang_install_success'])
             self.callback = None
-            self.mongo.insert_user_ready(True)
-            self.mongo.set_awaiting(False)
-            self.send(self.config['languages'][self.mongo.get_user_lang()]['send_location'])
+            self.mongo.insert_user_ready(user_id, True)
+            self.mongo.set_awaiting(user_id, False)
+            self.send(user_id, self.config['languages'][self.mongo.get_user_lang(user_id)]['send_location'])
 
-    def check(self):
-        if self.mongo.is_user_first_contact():
-            self.send_and_wait_response('What is your language? (russian/english)')
+    def check(self, user_id):
+        if self.mongo.is_user_first_contact(user_id):
+            self.send_and_wait_response(user_id, 'What is your language? (russian/english)')
             self.callback = self.set_lang
             raise BaseException
 
     def process(self, event):
         logging.info('Processing ' + str(event))
-        self.mongo.user_id = event['sender']['id']
-        if self.mongo.is_awaiting():
+        user_id = event['sender']['id']
+        if self.mongo.is_awaiting(user_id):
             if 'message' in event and self.callback is not None:
-                self.callback(event)
+                self.callback(user_id, event)
                 return
         try:
-            self.check()
+            self.check(user_id)
         except BaseException:
             return
-        if not self.mongo.is_user_location_exists() and self.mongo.is_user_wants():
-            if self.mongo.is_user_ready() and 'text' in event['message'] and event['message']['text'] == 'NO':
-                self.mongo.insert_user_wants(False)
-                self.send(self.config['languages'][self.mongo.get_user_lang()]['if_send_location'])
+        if not self.mongo.is_user_location_exists(user_id) and self.mongo.is_user_wants(
+                user_id) and not self.mongo.is_user_ready(user_id):
+            if self.mongo.is_user_ready(user_id) and 'text' in event['message'] and event['message']['text'] == 'NO':
+                self.mongo.insert_user_wants(user_id, False)
+                self.send(user_id, self.config['languages'][self.mongo.get_user_lang(user_id)]['if_send_location'])
                 return
             else:
-                self.mongo.insert_user_ready(True)
-                self.send_and_wait_response(self.config['languages'][self.mongo.get_user_lang()]['send_location'])
+                self.mongo.insert_user_ready(user_id, True)
+                self.send_and_wait_response(user_id, self.config['languages'][self.mongo.get_user_lang(user_id)][
+                    'send_location'])
                 return
         if 'text' in event['message']:
             data = event['message']['text']
-            data = process_text(data, {'user_id': self.mongo.user_id})
+            data = process_text(data, {'user_id': user_id})
         elif 'attachments' in event['message']:
             if len(event['message']['attachments']) > 1:
                 data = 'Only 1 attachment!'
             else:
                 user_attachment = event['message']['attachments'][0]
                 if user_attachment['type'] == 'location':
-                    if not self.mongo.is_user_location_exists() or self.mongo.is_user_ready():
-                        self.mongo.insert_user_location(user_attachment['payload']['coordinates'])
-                        data = 'Ваше местоположение успешно установлено!'
+                    if not self.mongo.is_user_location_exists(user_id) or self.mongo.is_user_ready(user_id):
+                        self.mongo.insert_user_location(user_attachment['payload']['coordinates'], user_id)
+                        data = 'Ваше местоположение обновлено'
                     else:
                         data = Attachment(
                             type='location',
@@ -80,14 +83,14 @@ class Handler:
                     data = process_text('sendsorryplease')
         else:
             data = process_text('sendsorryplease')
-        self.send(data)
+        self.send(user_id, data)
 
-    def send_and_wait_response(self, data):
-        self.send(data)
-        self.mongo.set_awaiting(True)
+    def send_and_wait_response(self, user_id, data):
+        self.send(user_id, data)
+        self.mongo.set_awaiting(user_id, True)
 
-    def send(self, data):
-        to = self.mongo.user_id
+    def send(self, user_id, data):
+        to = user_id
 
         def start_thread(inp):
             args = []
