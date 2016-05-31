@@ -7,8 +7,3 @@ forecastio_api_key: YOUR-FORECASTIO-API-KEY
 yandex_translate_key: YOUR-YANDEX-TRANSLATE-KEY
 fullchain: PATH-TO-CERTFILE
 privkey: PATH-TO-KEYFILE
-languages:
-  russian:
-    lang_install_success: Выбран русский язык
-  english:
-    lang_install_success: English language is selected

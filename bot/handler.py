@@ -4,17 +4,18 @@ from .queries.processor import process_text
 import logging
 from utils.text_formatter import restrict_len
 from utils.mongo import Mongo
+from utils.config import Config
 
 
 class Handler:
-    def __init__(self, facebook, config):
+    def __init__(self, facebook):
         self.facebook = facebook
         self.mongo = Mongo('userLocations')
         self.callback = None
-        self.config = config
+        self.languages = Config('languages.yml')
 
     def set_lang(self, user_id, event):
-        if event['message']['text'].lower().strip() not in self.config['languages']:
+        if event['message']['text'].lower().strip() not in self.languages:
             try:
                 self.check(user_id)
             except BaseException:
@@ -23,17 +24,20 @@ class Handler:
             logging.info('Set language = {} to user {}'.format(event['message']['text'], user_id))
             self.mongo.user_made_first_contact(user_id, True)
             self.mongo.set_lang(user_id, event['message']['text'])
-            self.send(user_id, self.config['languages'][self.mongo.get_user_lang(user_id)]['lang_install_success'])
+            self.send(user_id, self.get_phrase(self.mongo.get_user_lang(user_id), 'lang_install_success'))
             self.callback = None
             self.mongo.insert_user_ready(user_id, True)
             self.mongo.set_awaiting(user_id, False)
-            self.send(user_id, self.config['languages'][self.mongo.get_user_lang(user_id)]['send_location'])
+            self.send(user_id, self.get_phrase(self.mongo.get_user_lang(user_id), 'send_location'))
 
     def check(self, user_id):
         if self.mongo.is_user_first_contact(user_id):
-            self.send_and_wait_response(user_id, 'What is your language? (russian/english)')
+            self.send_waiting_response(user_id, 'What is your language? (russian/english)')
             self.callback = self.set_lang
             raise BaseException
+
+    def get_phrase(self, user_id, name):
+        return self.languages[self.mongo.get_user_lang(user_id)][name]
 
     def process(self, event):
         logging.info('Processing ' + str(event))
@@ -50,12 +54,11 @@ class Handler:
                 user_id) and not self.mongo.is_user_ready(user_id):
             if self.mongo.is_user_ready(user_id) and 'text' in event['message'] and event['message']['text'] == 'NO':
                 self.mongo.insert_user_wants(user_id, False)
-                self.send(user_id, self.config['languages'][self.mongo.get_user_lang(user_id)]['if_send_location'])
+                self.send(user_id, self.get_phrase(self.mongo.get_user_lang(user_id), 'if_send_location'))
                 return
             else:
                 self.mongo.insert_user_ready(user_id, True)
-                self.send_and_wait_response(user_id, self.config['languages'][self.mongo.get_user_lang(user_id)][
-                    'send_location'])
+                self.send_waiting_response(user_id, self.get_phrase(self.mongo.get_user_lang(user_id), 'send_location'))
                 return
         if 'text' in event['message']:
             data = event['message']['text']
@@ -68,7 +71,7 @@ class Handler:
                 if user_attachment['type'] == 'location':
                     if not self.mongo.is_user_location_exists(user_id) or self.mongo.is_user_ready(user_id):
                         self.mongo.insert_user_location(user_attachment['payload']['coordinates'], user_id)
-                        data = 'Ваше местоположение обновлено'
+                        data = self.get_phrase(user_id, 'location_updated')
                     else:
                         data = Attachment(
                             type='location',
@@ -85,7 +88,7 @@ class Handler:
             data = process_text('sendsorryplease')
         self.send(user_id, data)
 
-    def send_and_wait_response(self, user_id, data):
+    def send_waiting_response(self, user_id, data):
         self.send(user_id, data)
         self.mongo.set_awaiting(user_id, True)
 
