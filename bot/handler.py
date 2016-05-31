@@ -16,7 +16,7 @@ class Handler:
     def set_lang(self, event):
         if event['message']['text'] not in self.config['languages']:
             try:
-                self.checks()
+                self.check()
             except BaseException:
                 return
         else:
@@ -24,8 +24,11 @@ class Handler:
             self.mongo.set_lang(event['message']['text'])
             self.send(self.config['languages'][self.mongo.get_user_lang()]['lang_install_success'])
             self.callback = None
+            self.mongo.insert_user_ready(True)
+            self.mongo.set_awaiting(False)
+            self.send(self.config['languages'][self.mongo.get_user_lang()]['send_location'])
 
-    def checks(self):
+    def check(self):
         if self.mongo.is_user_first_contact():
             self.send_and_wait_response('What is your language? (russian/english)')
             self.callback = self.set_lang
@@ -37,17 +40,20 @@ class Handler:
         if self.mongo.is_awaiting():
             if 'message' in event and self.callback is not None:
                 self.callback(event)
-                self.mongo.set_awaiting(False)
                 return
         try:
-            self.checks()
+            self.check()
         except BaseException:
             return
-        if not self.mongo.is_user_location_exists():
-            self.mongo.insert_user_ready(True)
-            self.send_and_wait_response(
-                'Отправьте свое местоположение, если желаете получить доступ к погоде в своем регионе')
-            return
+        if not self.mongo.is_user_location_exists() and self.mongo.is_user_wants():
+            if self.mongo.is_user_ready() and 'text' in event['message'] and event['message']['text'] == 'NO':
+                self.mongo.insert_user_wants(False)
+                self.send(self.config['languages'][self.mongo.get_user_lang()]['if_send_location'])
+                return
+            else:
+                self.mongo.insert_user_ready(True)
+                self.send_and_wait_response(self.config['languages'][self.mongo.get_user_lang()]['send_location'])
+                return
         if 'text' in event['message']:
             data = event['message']['text']
             data = process_text(data, {'user_id': self.mongo.user_id})
