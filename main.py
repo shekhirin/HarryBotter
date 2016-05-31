@@ -1,10 +1,11 @@
 from bottle import Bottle, request, response
 from bot import Handler
-from utils import Config, Facebook, SSLWebServer
+from utils import Config, Facebook
 from datetime import datetime
 from functools import wraps
 import logging.config
 import yaml
+from werkzeug.serving import run_simple, WSGIRequestHandler
 
 config = Config()
 facebook = Facebook(config['messenger_access_token'])
@@ -52,5 +53,9 @@ def get():
         return 'Error, invalid token'
 
 
-srv = SSLWebServer(fullchain=config['fullchain'], privkey=config['privkey'], quiet=True, host='0.0.0.0', port=8000)
-app.run(server=srv, reloader=True)
+class QuietHandler(WSGIRequestHandler):
+    def log_request(self, code='-', size='-'): pass
+
+
+run_simple('0.0.0.0', 8000, app, use_reloader=True, ssl_context=(config['fullchain'], config['privkey']),
+           request_handler=QuietHandler)
