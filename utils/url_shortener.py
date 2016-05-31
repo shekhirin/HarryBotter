@@ -3,13 +3,13 @@ import json
 import os
 
 
-def shorten(url):
+def shorten(url, config):
     response = requests.post(
         'http://api.adf.ly/v1/shorten',
         data={
             "url": url,
-            '_api_key': os.environ['adfly_public_key'],
-            '_user_id': os.environ['adfly_user_id']
+            '_api_key': config['adfly_public_key'],
+            '_user_id': config['adfly_user_id']
         }
     )
     try:

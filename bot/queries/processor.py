@@ -4,9 +4,7 @@ import importlib
 import string
 import logging
 from utils.url_shortener import shorten
-
-english = 'abcdefghijklmnopqrstuvwxyz'
-russian = 'абвгдеёжзийклмнопрстуфхцчшщъыьэюя'
+from utils.text import detect_language
 
 sorries = {
     'en': ["Sorry, I don't understand you :(", "An error occurred, sorry"],
@@ -14,16 +12,11 @@ sorries = {
 }
 
 
-def process_text(query, params={}):
+def process_text(query, config, params={}):
     if query is 'sendsorryplease':
         return sorries['en'][0]
     ex = query.lower()
-    if ex[0] in english:
-        lang = 'en'
-    elif ex[0] in russian:
-        lang = 'ru'
-    else:
-        lang = 'en'
+    lang = detect_language(ex)
     try:
         file = yaml.load(open('bot/queries/{}.yml'.format(lang), encoding='utf-8'))
     except FileNotFoundError:
@@ -45,15 +38,16 @@ def process_text(query, params={}):
                         request = [re.search(regex['regex'], ex).group(group) for group in regex['query']]
                     else:
                         request = re.search(regex['regex'], ex).group(regex['query'])
-                    res = lib.get(request, params, lang)
+                    res = lib.get(request, config, params, lang)
                     if 'url' in res:
-                        res['url'] = shorten(res['url'])
+                        res['url'] = shorten(res['url'], config)
                     if res['content'] == 'nan':
                         if type(request) is list:
                             return regex['error'].format(*request) + (res['url'] if 'url' in res else '')
                         else:
                             return regex['error'].format(request) + (res['url'] if 'url' in res else '')
                     return res
-                except Exception:
+                except Exception as err:
+                    print(err)
                     return sorries[lang][1]
     return sorries[lang][0]

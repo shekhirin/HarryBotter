@@ -1,9 +1,9 @@
 import wikipedia
 from utils.url_shortener import shorten
-from utils.text_formatter import restrict_len
+from utils.text import restrict_len
 
 
-def get(query, params={}, lang='en'):
+def get(query, config, params={}, lang='en'):
     wikipedia.set_lang(lang)
     search = wikipedia.search(query)
     if not search:

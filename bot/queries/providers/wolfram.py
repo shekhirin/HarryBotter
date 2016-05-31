@@ -3,8 +3,8 @@ import os
 from urllib.parse import quote_plus
 
 
-def get(query, params={}, lang='en'):
-    client = wolframalpha.Client(os.environ['wolfram_appid'])
+def get(query, config, params={}, lang='en'):
+    client = wolframalpha.Client(config['wolfram_appid'])
     response = client.query(query)
     res = [pod for pod in response.pods if pod.title == 'Result' or pod.title == 'Response']
     if len(res) > 0 and not any(v is None for v in res):

@@ -10,9 +10,9 @@ local = {
 }
 
 
-def get(query, params={}, lang='en'):
+def get(query, config, params={}, lang='en'):
     if local[lang].match(query) and 'user_id' in params:
-        mongo = Mongo('userLocations')
+        mongo = Mongo('users')
         user_location = mongo.get_user_location(params['user_id'])
         lat, lng = user_location['lat'], user_location['long']
     else:
@@ -24,7 +24,7 @@ def get(query, params={}, lang='en'):
             }
         lat, lng = location.latitude, location.longitude
     forecast = forecastio.manual('https://api.forecast.io/forecast/%s/%s,%s?units=%s&lang=%s' % (
-        os.environ['forecastio_api_key'], lat, lng, "auto", lang
+        config['forecastio_api_key'], lat, lng, "auto", lang
     ))
     if forecast is None:
         return {

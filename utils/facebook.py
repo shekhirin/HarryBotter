@@ -9,6 +9,7 @@ class Facebook:
 
     def message(self, data):
         def process_item(data_item):
+            logging.info('HarryBotter response: ' + str(data_item))
             post_url = 'https://graph.facebook.com/v2.6/me/messages?access_token={}'.format(self.access_token)
             content = json.dumps(data_item)
             response = requests.post(post_url, headers={"Content-Type": "application/json"}, data=content)

@@ -2,37 +2,41 @@ from threading import Thread
 from sdk import *
 from .queries.processor import process_text
 import logging
-from utils.text_formatter import restrict_len
+from utils.text import restrict_len
 from utils.mongo import Mongo
 from utils.config import Config
+import time
 
 
 class Handler:
-    def __init__(self, facebook):
+    def __init__(self, config, facebook):
         self.facebook = facebook
-        self.mongo = Mongo('userLocations')
+        self.mongo = Mongo('users')
         self.callback = None
         self.languages = Config('languages.yml')
+        self.config = config
 
     def set_lang(self, user_id, event):
-        if event['message']['text'].lower().strip() not in self.languages:
+        lang = event['message']['text'].lower().strip()
+        if lang not in self.languages.keys():
             try:
                 self.check(user_id)
             except BaseException:
                 return
         else:
-            logging.info('Set language = {} to user {}'.format(event['message']['text'], user_id))
+            logging.info('Set language = {} to user {}'.format(lang, user_id))
             self.mongo.user_made_first_contact(user_id, True)
-            self.mongo.set_lang(user_id, event['message']['text'])
-            self.send(user_id, self.get_phrase(self.mongo.get_user_lang(user_id), 'lang_install_success'))
+            self.mongo.set_lang(user_id, lang)
+            self.send(user_id, self.get_phrase(user_id, 'lang_install_success'))
+            time.sleep(1)
             self.callback = None
             self.mongo.insert_user_ready(user_id, True)
             self.mongo.set_awaiting(user_id, False)
-            self.send(user_id, self.get_phrase(self.mongo.get_user_lang(user_id), 'send_location'))
+            self.send(user_id, self.get_phrase(user_id, 'send_location'))
 
     def check(self, user_id):
         if self.mongo.is_user_first_contact(user_id):
-            self.send_waiting_response(user_id, 'What is your language? (russian/english)')
+            self.send_waiting_response(user_id, 'What is your language? ({})'.format('/'.join(self.languages.keys())))
             self.callback = self.set_lang
             raise BaseException
 
@@ -54,15 +58,15 @@ class Handler:
                 user_id) and not self.mongo.is_user_ready(user_id):
             if self.mongo.is_user_ready(user_id) and 'text' in event['message'] and event['message']['text'] == 'NO':
                 self.mongo.insert_user_wants(user_id, False)
-                self.send(user_id, self.get_phrase(self.mongo.get_user_lang(user_id), 'if_send_location'))
+                self.send(user_id, self.get_phrase(user_id, 'if_send_location'))
                 return
             else:
                 self.mongo.insert_user_ready(user_id, True)
-                self.send_waiting_response(user_id, self.get_phrase(self.mongo.get_user_lang(user_id), 'send_location'))
+                self.send_waiting_response(user_id, self.get_phrase(user_id, 'send_location'))
                 return
         if 'text' in event['message']:
             data = event['message']['text']
-            data = process_text(data, {'user_id': user_id})
+            data = process_text(data, self.config, {'user_id': user_id})
         elif 'attachments' in event['message']:
             if len(event['message']['attachments']) > 1:
                 data = 'Only 1 attachment!'
@@ -70,7 +74,10 @@ class Handler:
                 user_attachment = event['message']['attachments'][0]
                 if user_attachment['type'] == 'location':
                     if not self.mongo.is_user_location_exists(user_id) or self.mongo.is_user_ready(user_id):
-                        self.mongo.insert_user_location(user_attachment['payload']['coordinates'], user_id)
+                        self.mongo.insert_user_location(user_id, user_attachment['payload']['coordinates'])
+                        logging.info(
+                            'Set location = {} to user {}'.format(self.mongo.get_user_location(user_id), user_id)
+                        )
                         data = self.get_phrase(user_id, 'location_updated')
                     else:
                         data = Attachment(
@@ -83,9 +90,9 @@ class Handler:
                         payload=ImagePayload(url=user_attachment['payload']['url'])
                     )
                 else:
-                    data = process_text('sendsorryplease')
+                    data = process_text('sendsorryplease', self.config)
         else:
-            data = process_text('sendsorryplease')
+            data = process_text('sendsorryplease', self.config)
         self.send(user_id, data)
 
     def send_waiting_response(self, user_id, data):

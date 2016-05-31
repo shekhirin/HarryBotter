@@ -5,7 +5,7 @@ import logging
 
 config = Config()
 facebook = Facebook(config['messenger_access_token'])
-handler = Handler(facebook)
+handler = Handler(config, facebook)
 
 logging.basicConfig(format='%(levelname)-8s [%(asctime)s] %(message)s', level=logging.DEBUG, filename='output.log')
 logging.getLogger("requests").setLevel(logging.WARNING)
