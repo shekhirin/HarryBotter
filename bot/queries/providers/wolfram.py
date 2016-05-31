@@ -6,7 +6,7 @@ from urllib.parse import quote_plus
 def get(query, config, params={}, lang='en'):
     client = wolframalpha.Client(config['wolfram_appid'])
     response = client.query(query)
-    res = [pod for pod in response.pods if pod.title == 'Result' or pod.title == 'Response']
+    res = [pod for pod in response.pods if 'result' in pod.title.lower() or 'response' in pod.title.lower()]
     if len(res) > 0 and not any(v is None for v in res):
         if res[0].img is not None:
             content = {
