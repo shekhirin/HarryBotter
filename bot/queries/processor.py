@@ -13,7 +13,7 @@ sorries = {
 }
 
 
-def process_text(query):
+def process_text(query, params={}):
     if query is 'sendsorryplease':
         return sorries['en'][0]
     ex = query.lower()
@@ -45,7 +45,7 @@ def process_text(query):
                         request = [re.search(regex['regex'], ex).group(group) for group in regex['query']]
                     else:
                         request = re.search(regex['regex'], ex).group(regex['query'])
-                    res = lib.get(request, lang)
+                    res = lib.get(request, params, lang)
                     if res['content'] == 'nan':
                         if type(request) is list:
                             return regex['error'].format(*request) + (res['url'] if 'url' in res else '')

@@ -28,7 +28,7 @@ class Handler:
             return
         if 'text' in event['message']:
             data = event['message']['text']
-            data = process_text(data)
+            data = process_text(data, {'user_id': user_id})
         elif 'attachments' in event['message']:
             if len(event['message']['attachments']) > 1:
                 data = 'Only 1 attachment!'

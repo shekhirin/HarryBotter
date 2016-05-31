@@ -8,7 +8,6 @@ class Mongo:
         self.collection = self.db[collection]
 
     def check_user_location_exists(self, user_id):
-        print(self.collection.find({'user_id': user_id, 'location': {'long': {'$exists': True}}}).count())
         return self.collection.find({'user_id': user_id, 'location.long': {'$exists': True}}).count() > 0
 
     def check_user_location_no(self, user_id):
