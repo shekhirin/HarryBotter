@@ -30,7 +30,7 @@ def process_text(query, config, params={}):
         for regex in regexes:
             if re.match(regex['regex'], ex):
                 try:
-                    logging.info('{} provider: {}'.format(source, regex))
+                    logging.getLogger('app').log(logging.INFO, '{} provider: {}'.format(source, regex))
                     if not regex['eval']:
                         ex = ''.join([x for x in ex if x not in string.punctuation])
                     lib = importlib.import_module('bot.queries.providers.{}'.format(source))

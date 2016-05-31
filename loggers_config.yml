@@ -1,0 +1,32 @@
+version: 1
+
+formatters:
+  access: 
+    format: "%(msg)s"
+  app:
+    format: "%(levelname)-8s [%(asctime)s] %(message)s"
+    datefmt: "%Y-%m-%d %H:%M:%S"
+
+handlers: 
+  access: 
+    filename: access.log
+    class: logging.FileHandler
+    formatter: access
+    level: DEBUG
+  app:
+    filename: output.log
+    class: logging.FileHandler
+    formatter: app
+    level: DEBUG
+
+loggers: 
+  access: 
+    handlers: [access]
+    level: INFO
+  app:
+    handlers: [app]
+    level: INFO
+
+root: 
+  handlers:
+  level: INFO

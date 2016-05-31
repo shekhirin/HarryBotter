@@ -3,22 +3,16 @@ from bot import Handler
 from utils import Config, Facebook, SSLWebServer
 from datetime import datetime
 from functools import wraps
-import logging
+import logging.config
+import yaml
 
 config = Config()
 facebook = Facebook(config['messenger_access_token'])
 handler = Handler(config, facebook)
 
-logging.basicConfig(format='%(levelname)-8s [%(asctime)s] %(message)s', level=logging.DEBUG, filename='output.log')
-logging.getLogger("requests").setLevel(logging.WARNING)
+logging.config.dictConfig(yaml.load(open('loggers_config.yml')))
 
-logger = logging.getLogger('main')
-logger.setLevel(logging.INFO)
-file_handler = logging.FileHandler('access.log')
-formatter = logging.Formatter('%(msg)s')
-file_handler.setLevel(logging.DEBUG)
-file_handler.setFormatter(formatter)
-logger.addHandler(file_handler)
+access_logger = logging.getLogger('access')
 
 
 def log_to_logger(fn):
@@ -26,11 +20,11 @@ def log_to_logger(fn):
     def _log_to_logger(*args, **kwargs):
         request_time = datetime.now()
         actual_response = fn(*args, **kwargs)
-        logger.info('%s - - %s "%s %s" %s -' % (request.remote_addr,
-                                                request_time.strftime('[%d/%b/%Y:%H:%M:%S +0300]'),
-                                                request.method,
-                                                request.url,
-                                                response.status_code))
+        access_logger.info('%s - - %s "%s %s" %s -' % (request.remote_addr,
+                                                       request_time.strftime('[%d/%b/%Y:%H:%M:%S +0300]'),
+                                                       request.method,
+                                                       request.url,
+                                                       response.status_code))
         return actual_response
 
     return _log_to_logger

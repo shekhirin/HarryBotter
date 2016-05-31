@@ -24,7 +24,7 @@ class Handler:
             except BaseException:
                 return
         else:
-            logging.info('Set language = {} to user {}'.format(lang, user_id))
+            logging.getLogger('app').log(logging.INFO, 'Set language = {} to user {}'.format(lang, user_id))
             self.mongo.user_made_first_contact(user_id, True)
             self.mongo.set_lang(user_id, lang)
             self.send(user_id, self.get_phrase(user_id, 'lang_install_success'))
@@ -44,7 +44,7 @@ class Handler:
         return self.languages[self.mongo.get_user_lang(user_id)][name]
 
     def process(self, event):
-        logging.info('Processing ' + str(event))
+        logging.getLogger('app').log(logging.INFO, 'Processing ' + str(event))
         user_id = event['sender']['id']
         if self.mongo.is_awaiting(user_id):
             if 'message' in event and self.callback is not None:
@@ -75,7 +75,7 @@ class Handler:
                 if user_attachment['type'] == 'location':
                     if not self.mongo.is_user_location_exists(user_id) or self.mongo.is_user_ready(user_id):
                         self.mongo.insert_user_location(user_id, user_attachment['payload']['coordinates'])
-                        logging.info(
+                        logging.getLogger('app').log(logging.INFO,
                             'Set location = {} to user {}'.format(self.mongo.get_user_location(user_id), user_id)
                         )
                         data = self.get_phrase(user_id, 'location_updated')
