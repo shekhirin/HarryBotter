@@ -4,7 +4,7 @@ def restrict_len(content):
     return content
 
 
-def detect_language(word):
+def detect_language(langs, word):
     from langdetect import detect
     russian = 'абвгдеёжзийклмнопрстуфхцчшщъыьэюя'
 
@@ -12,4 +12,6 @@ def detect_language(word):
         lang = 'ru'
     else:
         lang = detect(word)
+        if lang not in langs:
+            lang = 'en'
     return lang

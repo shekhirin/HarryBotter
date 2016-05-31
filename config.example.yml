@@ -7,3 +7,5 @@ forecastio_api_key: YOUR-FORECASTIO-API-KEY
 yandex_translate_key: YOUR-YANDEX-TRANSLATE-KEY
 fullchain: PATH-TO-CERTFILE
 privkey: PATH-TO-KEYFILE
+hub.verify_token: FB-HUB.VERIFY_TOKEN
+available_langs: [en,ru]
