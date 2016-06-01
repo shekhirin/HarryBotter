@@ -16,7 +16,7 @@ def process_text(query, config, params={}):
     if query is 'sendsorryplease':
         return sorries['en'][0]
     ex = query.lower()
-    lang = detect_language(config['available_langs'], ex)
+    lang = detect_language(config, config['available_langs'], ex)
     try:
         file = yaml.load(open('bot/queries/{}.yml'.format(lang), encoding='utf-8'))
     except FileNotFoundError:

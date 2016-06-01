@@ -4,8 +4,8 @@ from utils.text import detect_language
 
 
 def get(query, config, params={}, lang='en'):
-    lang = detect_language(config['available_langs'], query[0])
     translator = YandexTranslate(key=config['yandex_translate_key'])
+    lang = detect_language(config, list(translator.langs), query[0])
     to_translate = query[0]
     try:
         to_lang = languages.get(

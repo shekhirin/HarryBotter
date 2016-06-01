@@ -4,14 +4,15 @@ def restrict_len(content):
     return content
 
 
-def detect_language(langs, word):
-    from langdetect import detect
+def detect_language(config, langs, word):
+    from yandex_translate import YandexTranslate
+    translator = YandexTranslate(config['yandex_translate_key'])
     russian = 'абвгдеёжзийклмнопрстуфхцчшщъыьэюя'
 
     if word[0] in russian:
         lang = 'ru'
     else:
-        lang = detect(word)
+        lang = translator.detect(word)
         if lang not in langs:
             lang = 'en'
     return lang
