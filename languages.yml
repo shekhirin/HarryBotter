@@ -1,10 +1,8 @@
 russian:
   lang_install_success: Выбран русский язык
-  send_location: Отправьте ваше местоположение, если хотите получить доступ к погоде в вашем регионе
-  if_send_location: Если вы захотите получить доступ к погоде в вашем регионе, отправьте свое местоположение
+  send_location: Отправьте свое местоположение, если хотите получить доступ к погоде в вашем регионе
   location_updated: Ваше местоположение обновлено
 english:
   lang_install_success: English language is selected
   send_location: Send your location if you want to get access to the weather in your region
-  if_send_location: If you want to get access to the weather in your region, just send your location
   location_updated: Your location is updated

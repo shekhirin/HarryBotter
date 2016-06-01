@@ -56,11 +56,7 @@ class Handler:
             return
         if not self.mongo.is_user_location_exists(user_id) and self.mongo.is_user_wants(
                 user_id) and not self.mongo.is_user_ready(user_id):
-            if self.mongo.is_user_ready(user_id) and 'text' in event['message'] and event['message']['text'] == 'NO':
-                self.mongo.insert_user_wants(user_id, False)
-                self.send(user_id, self.get_phrase(user_id, 'if_send_location'))
-                return
-            else:
+            if not self.mongo.is_user_ready(user_id):
                 self.mongo.insert_user_ready(user_id, True)
                 self.send_waiting_response(user_id, self.get_phrase(user_id, 'send_location'))
                 return
