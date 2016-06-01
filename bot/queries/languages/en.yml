@@ -4,6 +4,11 @@ wikipedia:
     error: Nothing was founded for "{}" :(
     eval: False
     example: What is google?
+  - regex: ^wiki (.+)$
+    query: 1
+    error: Nothing was founded for "{}" :(
+    eval: False
+    example: wiki Lincoln
 
 wolfram:
   - regex: ^(wolfram|wolf|wolframalpha|wolfalpha)?,? (.+)$

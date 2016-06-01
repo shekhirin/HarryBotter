@@ -125,9 +125,11 @@ class Handler:
         elif type(data) is list:
             for item_data in data:
                 start_thread(item_data)
+                time.sleep(0.2)
         elif type(data) is dict:
             if type(data['content']) is list:
                 for content_data in data['content']:
                     dic = data
                     dic['content'] = content_data
                     start_thread(dic)
+                    time.sleep(0.2)

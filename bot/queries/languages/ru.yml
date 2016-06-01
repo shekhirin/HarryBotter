@@ -4,6 +4,11 @@ wikipedia:
     error: Ничего не найдено для "{}" :(
     eval: False
     example: Что такое гриб?
+  - regex: ^вики (.+)$
+    query: 1
+    error: Ничего не найдено для "{}" :(
+    eval: False
+    example: вики Путин
 
 wolfram:
   - regex: ^(вольфрам|вольф|вольфрамальфа|вольфальфа)?,? (.+)$

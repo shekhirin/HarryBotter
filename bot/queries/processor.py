@@ -18,9 +18,9 @@ def process_text(query, config, params={}):
     ex = query.lower()
     lang = detect_language(config, config['available_langs'], ex)
     try:
-        file = yaml.load(open('bot/queries/{}.yml'.format(lang), encoding='utf-8'))
+        file = yaml.load(open('bot/queries/languages/{}.yml'.format(lang), encoding='utf-8'))
     except FileNotFoundError:
-        file = yaml.load(open('{}.yml'.format(lang), encoding='utf-8'))
+        file = yaml.load(open('languages/{}.yml'.format(lang), encoding='utf-8'))
     for source, regexes in file.items():
         for i, regex in enumerate(regexes):
             if 'priority' not in regex:
