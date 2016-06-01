@@ -32,5 +32,5 @@ def get(query, config, params={}, lang='en'):
         }
     return {
         'type': 'text',
-        'content': forecast.daily().summary + '\n{}\n{}'.format(lat, lng)
+        'content': forecast.daily().summary
     }
