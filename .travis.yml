@@ -9,4 +9,4 @@ services:
   - mongodb
 
 before_script:
-  - mongo harrybotter --eval 'db.createCollection('users');'
+  - mongo harrybotter --eval 'db.createCollection("users");'
