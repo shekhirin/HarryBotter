@@ -38,7 +38,7 @@ def process_text(query, config, params={}):
                         request = [re.search(regex['regex'], ex).group(group) for group in regex['query']]
                     else:
                         request = re.search(regex['regex'], ex).group(regex['query'])
-                    res = lib.get(request, config, params, lang)
+                    res = getattr(lib, '{}Provider'.format(source.capitalize())).get(request, config, params, lang)
                     if 'url' in res:
                         res['url'] = shorten(res['url'], config)
                     if res['content'] == 'nan':
