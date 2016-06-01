@@ -14,7 +14,9 @@ def get(query, config, params={}, lang='en'):
                 result[provider] += regex['example'] + '\n'
         return {
             'type': 'text',
-            'content': '\n\n'.join(['=={}==\n{}'.format(x.upper(), y) for x, y in result.items()])
+            'content': '\n\n'.join(
+                ['=={}==\n{}'.format(x.upper(), y[:250].split('\n')[:-1] if len(y) > 250 else y) for x, y in
+                 result.items()])
         }
     else:
         return {
