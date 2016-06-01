@@ -52,8 +52,8 @@ translate:
     eval: False
     example: Как груша по-испански?
 
-  - regex: ^как по(-)?(\S+) (.+)$
-    query: [3,2]
+  - regex: ^как (на |по(-)?|по )(\S+) (.+)$
+    query: [4,3]
     error: Не могу перевести {} на {}
     eval: False
     example: Как по-китайски лошадь?
