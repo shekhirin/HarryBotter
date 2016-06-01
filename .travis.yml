@@ -10,3 +10,6 @@ services:
 
 before_script:
   - mongo harrybotter --eval 'db.createCollection("users");'
+
+notifications:
+  email: false
