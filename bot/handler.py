@@ -124,7 +124,11 @@ class Handler:
                    args=(Message(Recipient(to), data),)).start()
         elif type(data) is list:
             for item_data in data:
-                start_thread(item_data)
+                if type(item_data) is str:
+                    self.send(user_id, item_data)
+                elif type(item_data) is dict:
+                    item_data['content'] = item_data['content'].split('\n\n')
+                    self.send(user_id, item_data)
                 time.sleep(0.2)
         elif type(data) is dict:
             if type(data['content']) is list:

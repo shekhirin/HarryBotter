@@ -8,8 +8,8 @@ from utils.text import detect_language
 import traceback
 
 sorries = {
-    'en': ["Sorry, I don't understand you :(", "An error occurred, sorry"],
-    'ru': ["Извини, я тебя не понимаю :(", "Произошла ошибка, извините"]
+    'en': [["Sorry, I don't understand you :(", "Type \"help\" for list of commands"], "An error occurred, sorry"],
+    'ru': [["Извини, я тебя не понимаю :(", "Отправьте \"помощь\" для списка команд"], "Произошла ошибка, извините"]
 }
 
 
