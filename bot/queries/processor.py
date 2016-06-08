@@ -5,6 +5,7 @@ import string
 import logging
 from utils.url_shortener import shorten
 from utils.text import detect_language
+import traceback
 
 sorries = {
     'en': ["Sorry, I don't understand you :(", "An error occurred, sorry"],
@@ -21,6 +22,7 @@ def process_text(query, config, params={}):
         file = yaml.load(open('bot/queries/languages/{}.yml'.format(lang), encoding='utf-8'))
     except FileNotFoundError:
         file = yaml.load(open('languages/{}.yml'.format(lang), encoding='utf-8'))
+    compatible = []
     for source, regexes in file.items():
         for i, regex in enumerate(regexes):
             if 'priority' not in regex:
@@ -29,24 +31,30 @@ def process_text(query, config, params={}):
         regexes = sorted(regexes, key=lambda x: x['priority'], reverse=True)
         for regex in regexes:
             if re.match(regex['regex'], ex):
-                try:
-                    logging.getLogger('app').log(logging.INFO, '{} provider: {}'.format(source, regex))
-                    if not regex['eval']:
-                        ex = ''.join([x for x in ex if x not in string.punctuation])
-                    lib = importlib.import_module('bot.queries.providers.{}'.format(source))
-                    if type(regex['query']) is list:
-                        request = [re.search(regex['regex'], ex).group(group) for group in regex['query']]
-                    else:
-                        request = re.search(regex['regex'], ex).group(regex['query'])
-                    res = getattr(lib, '{}Provider'.format(source.capitalize())).get(request, config, params, lang)
-                    if 'url' in res:
-                        res['url'] = shorten(res['url'], config)
-                    if res['content'] == 'nan':
-                        if type(request) is list:
-                            return regex['error'].format(*request) + (res['url'] if 'url' in res else '')
-                        else:
-                            return regex['error'].format(request) + (res['url'] if 'url' in res else '')
-                    return res
-                except Exception:
-                    return sorries[lang][1]
-    return sorries[lang][0]
+                compatible.append([source, regex])
+
+    if len(compatible) == 0:
+        return sorries[lang][0]
+    source, regex = sorted(compatible, key=lambda x: x[1]['priority'], reverse=True)[0]
+
+    try:
+        logging.getLogger('app').log(logging.INFO, '{} provider: {}'.format(source, regex))
+        if not regex['eval']:
+            ex = ''.join([x for x in ex if x not in string.punctuation])
+        lib = importlib.import_module('bot.queries.providers.{}'.format(source))
+        if type(regex['query']) is list:
+            request = [re.search(regex['regex'], ex).group(group) for group in regex['query']]
+        else:
+            request = re.search(regex['regex'], ex).group(regex['query'])
+        res = getattr(lib, '{}Provider'.format(source.capitalize())).get(request, config, params, lang)
+        if 'url' in res:
+            res['url'] = shorten(res['url'], config)
+        if res['content'] == 'nan':
+            if type(request) is list:
+                return regex['error'].format(*request) + (res['url'] if 'url' in res else '')
+            else:
+                return regex['error'].format(request) + (res['url'] if 'url' in res else '')
+        return res
+    except Exception:
+        logging.getLogger('app').log(logging.ERROR, traceback.format_exc())
+        return sorries[lang][1]

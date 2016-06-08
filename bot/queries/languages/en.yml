@@ -24,8 +24,8 @@ help:
     eval: False
 
 weather:
-  - regex: ^(what('s)? (is )?)?(the )?weather (is )?(in )?(.+)$
-    query: 7
+  - regex: ^(what((')?s)? (is )?)?(the )?weather (is )?(in )?(.+)$
+    query: 8
     error: I don't know anything about the weather in {}
     eval: False
     priority: 1
@@ -37,11 +37,11 @@ weather:
     eval: False
     priority: 2
     params: [user_id]
-    example: What's the weather at home?
+    example: What is the weather at home?
 
 translate:
-  - regex: ^(translate)? ?(how)? ?(is |to say)?(.+) (in|to|into) (.+)$
-    query: [4,6]
+  - regex: ^(translate)?(.+) (to|into|in) (.+)$
+    query: [2, 4]
     error: I don't know how to say {} in {}
     eval: False
     example: Translate roar to russian
