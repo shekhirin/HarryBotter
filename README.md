@@ -10,6 +10,14 @@ Install with pip
 $ pip install -r requirements.txt
 ```
 
+Rename config.example.yml to config.yml
+
+```sh
+$ mv config.example.yml config.yml
+```
+
+Add API keys and required settings to config.yml
+
 ## Running tests
 
 Install nosetests:
