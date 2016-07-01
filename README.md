@@ -29,8 +29,8 @@ Pull requests and stars are always welcome. For bugs and feature requests, [plea
 
 **Alexey Shekhirin**
 
-* [github/jonschlinkert](https://github.com/elishanto)
-* [vk/jonschlinkert](http://vk.com/elishanto)
+* [github/elishanto](https://github.com/elishanto)
+* [vk/elishanto](http://vk.com/elishanto)
 
 ## License
 
